@@ -39,12 +39,19 @@ class Login extends React.Component {
     }
   };
 
+  handleBtnConfig = (event) => {
+    event.preventDefault();
+    const { history } = this.props;
+    history.push('/Config');
+  }
+
   handleClick = async (name, gravatarEmail) => {
     const { submitFormAction, history, TOKEN } = this.props;
     submitFormAction({
       name,
       gravatarEmail,
     });
+
     const receiver = await fetchTriviaApi();
     TOKEN(receiver);
     history.push('/jogo');
@@ -54,6 +61,13 @@ class Login extends React.Component {
     const { gravatarEmail, name, btnDisable } = this.state;
     return (
       <main className="formStyle">
+        <button
+          type="button"
+          data-testid="btn-settings"
+          onClick={ this.handleBtnConfig }
+        >
+          Configurações
+        </button>
         <form>
           <h1>Login</h1>
           <label htmlFor="input-email">
