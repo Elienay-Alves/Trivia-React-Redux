@@ -38,11 +38,24 @@ class Login extends React.Component {
     }
   };
 
+  handleBtnConfig = (event) => {
+    event.preventDefault();
+    const { history } = this.props;
+    history.push('/Config');
+  }
+
   render() {
     const { gravatarEmail, name, btnDisable } = this.state;
     const { submitFormAction } = this.props;
     return (
       <main className="formStyle">
+        <button
+          type="button"
+          data-testid="btn-settings"
+          onClick={ this.handleBtnConfig }
+        >
+          Configurações
+        </button>
         <form>
           <h1>Login</h1>
           <label htmlFor="input-email">
@@ -92,6 +105,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 Login.propTypes = {
   submitFormAction: PropTypes.func.isRequired,
+  history: PropTypes.shape(Object).isRequired,
 };
 
 export default connect(null, mapDispatchToProps)(Login);
