@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { login } from '../redux/action/index';
+import { login, getToken } from '../redux/action/index';
+import fetchTriviaApi from '../services/fetchTriviaApi';
 
 class Login extends React.Component {
   constructor() {
@@ -38,9 +39,19 @@ class Login extends React.Component {
     }
   };
 
+  handleClick = async (name, gravatarEmail) => {
+    const { submitFormAction, history, TOKEN } = this.props;
+    submitFormAction({
+      name,
+      gravatarEmail,
+    });
+    const receiver = await fetchTriviaApi();
+    TOKEN(receiver);
+    history.push('/jogo');
+  };
+
   render() {
     const { gravatarEmail, name, btnDisable } = this.state;
-    const { submitFormAction } = this.props;
     return (
       <main className="formStyle">
         <form>
@@ -72,10 +83,7 @@ class Login extends React.Component {
           <button
             type="submit"
             data-testid="btn-play"
-            onClick={ () => submitFormAction({
-              name,
-              gravatarEmail,
-            }) }
+            onClick={ () => this.handleClick(name, gravatarEmail) }
             disabled={ btnDisable }
           >
             Entrar
@@ -88,10 +96,13 @@ class Login extends React.Component {
 
 const mapDispatchToProps = (dispatch) => ({
   submitFormAction: (payload) => dispatch(login(payload)),
+  TOKEN: (value) => dispatch(getToken(value)),
 });
 
 Login.propTypes = {
   submitFormAction: PropTypes.func.isRequired,
+  history: PropTypes.shape({ push: PropTypes.func }).isRequired,
+  TOKEN: PropTypes.func.isRequired,
 };
 
 export default connect(null, mapDispatchToProps)(Login);
