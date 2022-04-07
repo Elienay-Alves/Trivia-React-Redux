@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import md5 from 'crypto-js/md5';
-import fetchGravatar from '../services/fetchGravatar';
 
 class Header extends React.Component {
   constructor() {
@@ -16,7 +15,7 @@ class Header extends React.Component {
   async componentDidMount() {
     const { email } = this.props;
     const gravatarEmail = md5(email).toString();
-    await fetchGravatar(gravatarEmail).then((data) => this.setState({ image: data.url }));
+    this.setState({ image: `https://www.gravatar.com/avatar/${gravatarEmail}` });
   }
 
   render() {
