@@ -59,6 +59,7 @@ class Login extends React.Component {
 
   render() {
     const { gravatarEmail, name, btnDisable } = this.state;
+
     return (
       <main className="formStyle">
         <button

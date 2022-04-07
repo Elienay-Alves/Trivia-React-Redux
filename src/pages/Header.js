@@ -16,9 +16,9 @@ class Header extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  image: state.player,
-  name: state.player.name,
-  score: state.player.score,
+  image: state.tokenReducer.token,
+  name: state.loginReducer.name,
+  score: state.loginReducer.score,
 });
 
 export default connect(mapStateToProps)(Header);
