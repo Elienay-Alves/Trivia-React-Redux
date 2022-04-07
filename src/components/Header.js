@@ -12,7 +12,7 @@ class Header extends React.Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { email } = this.props;
     const gravatarEmail = md5(email).toString();
     this.setState({ image: `https://www.gravatar.com/avatar/${gravatarEmail}` });
