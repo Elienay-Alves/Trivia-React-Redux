@@ -2,11 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { actionFetchQuestion } from '../redux/action';
+import './buttonColor.css';
 
 class Question extends React.Component {
   componentDidMount() {
     const { fetchQuestions } = this.props;
     fetchQuestions();
+  }
+
+  getButtonColor = ({ target }, incAnswer, quest, index) => {
+    const verifyAnswer = this.verifiAnswer(incAnswer, quest, index);
+    if (verifyAnswer === 'correct-answer') {
+      target.className = verifyAnswer;
+    } else {
+      target.className = 'wrong-answer';
+    }
   }
 
   allAnswers = (incAnswers, corAnswer) => {
@@ -48,7 +58,10 @@ class Question extends React.Component {
                     .map((incAnswer, index) => (
                       <button
                         key={ incAnswer }
+                        className=""
                         type="button"
+                        onClick={ (event) => (this.getButtonColor(event, incAnswer,
+                          question.correct_answer, index)) }
                         data-testid={
                           this.verifiAnswer(incAnswer, question.correct_answer, index)
                         }
