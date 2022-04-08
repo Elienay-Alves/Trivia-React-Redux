@@ -10,9 +10,15 @@ class Question extends React.Component {
   }
 
   allAnswers = (incAnswers, corAnswer) => {
-    const allAnswers = [...incAnswers];
-    allAnswers.push(corAnswer);
-    return (allAnswers.sort());
+    // const random = Math.floor(Math.random() * allAnswers.length);
+    // console.log(random, allAnswers[random]);
+    const numberRandom = 0.5;
+    const quests = [...incAnswers, corAnswer];
+    const shuffle = quests.sort(() => Math.random() - numberRandom);
+    // const shuffle = Math.floor(Math.random() * quests.length);
+    console.log(quests);
+    console.log(shuffle);
+    return (shuffle);
   }
 
   verifiAnswer = (answer, corAnswer, index) => {
@@ -31,22 +37,22 @@ class Question extends React.Component {
             <div key={ question.question }>
               <div>
                 <div>
-                  <div>
-                    <h2 data-testid="question-category">{ question.category }</h2>
+                  <div data-testid="question-category">
+                    <h2>{ question.category }</h2>
                   </div>
-                  <div>
-                    <h3 data-testid="question-text">{ question.question }</h3>
+                  <div data-testid="question-text">
+                    <h3>{ question.question }</h3>
                   </div>
                 </div>
               </div>
-              {
-                this.allAnswers(question.incorrect_answers, question.correct_answer)
-                  .map((incAnswer, index) => (
-                    <div
-                      data-testid="answer-options"
-                      key={ incAnswer }
-                    >
+              <div
+                data-testid="answer-options"
+              >
+                {
+                  this.allAnswers(question.incorrect_answers, question.correct_answer)
+                    .map((incAnswer, index) => (
                       <button
+                        key={ incAnswer }
                         type="button"
                         data-testid={
                           this.verifiAnswer(incAnswer, question.correct_answer, index)
@@ -54,9 +60,9 @@ class Question extends React.Component {
                       >
                         { incAnswer }
                       </button>
-                    </div>
-                  ))
-              }
+                    ))
+                }
+              </div>
             </div>
           ))
         }
