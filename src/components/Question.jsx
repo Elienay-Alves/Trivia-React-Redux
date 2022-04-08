@@ -5,6 +5,14 @@ import { actionFetchQuestion } from '../redux/action';
 import './buttonColor.css';
 
 class Question extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      ind: 0,
+    };
+  }
+
   componentDidMount() {
     const { fetchQuestions } = this.props;
     fetchQuestions();
@@ -17,6 +25,8 @@ class Question extends React.Component {
     } else {
       target.className = 'wrong-answer';
     }
+
+    this.setState((prevState) => ({ ind: prevState.ind + 1 }));
   }
 
   allAnswers = (incAnswers, corAnswer) => {
@@ -35,21 +45,14 @@ class Question extends React.Component {
 
   render() {
     const { questions } = this.props;
+    const { ind } = this.state;
     return (
       <>
         {
-          questions.map((question) => (
+          questions.filter((obj, index) => index === ind).map((question) => (
             <div key={ question.question }>
-              <div>
-                <div>
-                  <div data-testid="question-category">
-                    <h2>{ question.category }</h2>
-                  </div>
-                  <div data-testid="question-text">
-                    <h3>{ question.question }</h3>
-                  </div>
-                </div>
-              </div>
+              <h2 data-testid="question-category">{ question.category }</h2>
+              <h3 data-testid="question-text">{ question.question }</h3>
               <div
                 data-testid="answer-options"
               >
