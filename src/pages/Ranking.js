@@ -2,7 +2,23 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 class Ranking extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      data: [],
+    };
+  }
+
+  componentDidMount() {
+    const get = JSON.parse(localStorage.getItem('ranking'));
+    const item = !get ? [] : get;
+    this.setState({
+      data: item,
+    });
+  }
+
   render() {
+    const { data } = this.state;
     const { history } = this.props;
     return (
       <div>
@@ -14,6 +30,26 @@ class Ranking extends React.Component {
         >
           Início
         </button>
+        <ul>
+          { data.map((el, index) => (
+            <>
+              <li>
+                <img scr={ el.img } alt={ el.name } />
+              </li>
+              <li
+                key={ index }
+                data-testid={ `player-name-${index}` }
+              >
+                { el.name }
+              </li>
+              <li
+                data-testid={ `player-score-${index}` }
+              >
+                { el.score }
+              </li>
+            </>
+          )) }
+        </ul>
       </div>
     );
   }
