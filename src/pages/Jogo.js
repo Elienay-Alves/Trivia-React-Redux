@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 // import fetchQuestions from '../services/fetchQuestionsApi';
 import Question from '../components/Question';
-import Answers from '../components/Answers';
 
 class Jogo extends React.Component {
   // componentDidMount() {
@@ -16,7 +15,6 @@ class Jogo extends React.Component {
       <>
         <h1>Jogo</h1>
         <Question />
-        <Answers />
       </>
     );
   }

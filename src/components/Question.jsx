@@ -9,6 +9,19 @@ class Question extends React.Component {
     fetchQuestions();
   }
 
+  allAnswers = (incAnswers, corAnswer) => {
+    const allAnswers = [...incAnswers];
+    allAnswers.push(corAnswer);
+    return (allAnswers.sort());
+  }
+
+  verifiAnswer = (answer, corAnswer, index) => {
+    if (answer === corAnswer) {
+      return 'correct-answer';
+    }
+    return `wrong-answer-${index}`;
+  }
+
   render() {
     const { questions } = this.props;
     return (
@@ -17,11 +30,33 @@ class Question extends React.Component {
           questions.map((question) => (
             <div key={ question.question }>
               <div>
-                <h2 data-testid="question-category">{ question.category }</h2>
+                <div>
+                  <div>
+                    <h2 data-testid="question-category">{ question.category }</h2>
+                  </div>
+                  <div>
+                    <h3 data-testid="question-text">{ question.question }</h3>
+                  </div>
+                </div>
               </div>
-              <div>
-                <h3 data-testid="question-text">{ question.question }</h3>
-              </div>
+              {
+                this.allAnswers(question.incorrect_answers, question.correct_answer)
+                  .map((incAnswer, index) => (
+                    <div
+                      data-testid="answer-options"
+                      key={ incAnswer }
+                    >
+                      <button
+                        type="button"
+                        data-testid={
+                          this.verifiAnswer(incAnswer, question.correct_answer, index)
+                        }
+                      >
+                        { incAnswer }
+                      </button>
+                    </div>
+                  ))
+              }
             </div>
           ))
         }
