@@ -10,14 +10,9 @@ class Question extends React.Component {
   }
 
   allAnswers = (incAnswers, corAnswer) => {
-    // const random = Math.floor(Math.random() * allAnswers.length);
-    // console.log(random, allAnswers[random]);
     const numberRandom = 0.5;
     const quests = [...incAnswers, corAnswer];
     const shuffle = quests.sort(() => Math.random() - numberRandom);
-    // const shuffle = Math.floor(Math.random() * quests.length);
-    console.log(quests);
-    console.log(shuffle);
     return (shuffle);
   }
 
