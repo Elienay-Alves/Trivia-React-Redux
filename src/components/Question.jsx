@@ -9,7 +9,7 @@ class Question extends React.Component {
     super();
 
     this.state = {
-      ind: 0,
+      indice: 0,
     };
   }
 
@@ -19,14 +19,18 @@ class Question extends React.Component {
   }
 
   getButtonColor = ({ target }, incAnswer, quest, index) => {
+    const seconds = 500;
     const verifyAnswer = this.verifiAnswer(incAnswer, quest, index);
+
     if (verifyAnswer === 'correct-answer') {
       target.className = verifyAnswer;
     } else {
       target.className = 'wrong-answer';
     }
 
-    this.setState((prevState) => ({ ind: prevState.ind + 1 }));
+    setTimeout(() => this.setState((prevState) => ({
+      indice: prevState.ind + 1,
+    })), seconds);
   }
 
   allAnswers = (incAnswers, corAnswer) => {
@@ -45,34 +49,30 @@ class Question extends React.Component {
 
   render() {
     const { questions } = this.props;
-    const { ind } = this.state;
+    const { indice } = this.state;
     return (
       <>
         {
-          questions.filter((obj, index) => index === ind).map((question) => (
+          questions.filter((obj, index) => index === indice).map((question) => (
             <div key={ question.question }>
               <h2 data-testid="question-category">{ question.category }</h2>
               <h3 data-testid="question-text">{ question.question }</h3>
-              <div
-                data-testid="answer-options"
-              >
-                {
-                  this.allAnswers(question.incorrect_answers, question.correct_answer)
-                    .map((incAnswer, index) => (
-                      <button
-                        key={ incAnswer }
-                        className=""
-                        type="button"
-                        onClick={ (event) => (this.getButtonColor(event, incAnswer,
-                          question.correct_answer, index)) }
-                        data-testid={
-                          this.verifiAnswer(incAnswer, question.correct_answer, index)
-                        }
-                      >
-                        { incAnswer }
-                      </button>
-                    ))
-                }
+              <div data-testid="answer-options">
+                { this.allAnswers(question.incorrect_answers, question.correct_answer)
+                  .map((incAnswer, index) => (
+                    <button
+                      key={ incAnswer }
+                      className=""
+                      type="button"
+                      onClick={ (event) => (this.getButtonColor(event, incAnswer,
+                        question.correct_answer, index)) }
+                      data-testid={
+                        this.verifiAnswer(incAnswer, question.correct_answer, index)
+                      }
+                    >
+                      { incAnswer }
+                    </button>
+                  ))}
               </div>
             </div>
           ))
