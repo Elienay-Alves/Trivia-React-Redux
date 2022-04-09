@@ -10,7 +10,7 @@ class Question extends React.Component {
     fetchQuestions();
   }
 
-  getButtonColor = (arrayIncorrets, incAnswer, quest, index) => {
+  getButtonColor = ({ target }, incAnswer, quest, index) => {
     const verifyAnswer = this.verifiAnswer(incAnswer, quest, index);
     if (verifyAnswer === 'correct-answer') {
       target.className = verifyAnswer;
@@ -65,8 +65,8 @@ class Question extends React.Component {
                         key={ incAnswer }
                         className=""
                         type="button"
-                        onClick={ () => (this.getButtonColor(question.incorrect_answers,
-                          incAnswer, question.correct_answer, index)) }
+                        onClick={ (event) => (this.getButtonColor(event, incAnswer,
+                          question.correct_answer, index)) }
                         data-testid={
                           this.verifiAnswer(incAnswer, question.correct_answer, index)
                         }
