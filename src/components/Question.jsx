@@ -4,35 +4,51 @@ import { connect } from 'react-redux';
 import { actionFetchQuestion } from '../redux/action';
 import './buttonColor.css';
 
+const CORRECT_ANSWER = 'correct-answer';
+
 class Question extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      ind: 0,
+      answered: false,
+    };
+  }
+
   componentDidMount() {
     const { fetchQuestions } = this.props;
     fetchQuestions();
   }
 
-  getButtonColor = ({ target }, incAnswer, quest, index) => {
-    const verifyAnswer = this.verifiAnswer(incAnswer, quest, index);
-    if (verifyAnswer === 'correct-answer') {
-      target.className = verifyAnswer;
-    } else {
-      target.className = 'wrong-answer';
-    }
+  getButtonColor = () => {
+    this.setState(() => ({ answered: true }));
   }
 
-  auxButtonCoor = (arrayIncorrets, quest) => {
-    const answers = this.allAnswers(arrayIncorrets, quest);
-    console.log(answers);
-  }
+  nextQuestion = () => {
+    this.setState((prevState) => ({ ind: prevState.ind + 1 }));
+    this.setState(() => ({ answered: false }));
+  };
 
   allAnswers = (incAnswers, corAnswer) => {
     const numberRandom = 0.5;
-    const quests = [...incAnswers, corAnswer];
+    const quests = incAnswers.map((answer) => {
+      const objAnswer = {
+        answer,
+        type: 'wrong-answer',
+      };
+      return objAnswer;
+    });
+    quests.push({
+      answer: corAnswer,
+      type: CORRECT_ANSWER,
+    });
     const shuffle = quests.sort(() => Math.random() - numberRandom);
-    return shuffle;
+    return (shuffle);
   }
 
-  verifiAnswer = (answer, corAnswer, index) => {
-    if (answer === corAnswer) {
+  verifiAnswer = (answer, index) => {
+    if (answer === CORRECT_ANSWER) {
       return 'correct-answer';
     }
     return `wrong-answer-${index}`;
@@ -40,21 +56,14 @@ class Question extends React.Component {
 
   render() {
     const { questions } = this.props;
+    const { ind, answered } = this.state;
     return (
       <>
         {
-          questions.map((question) => (
+          questions.filter((obj, index) => index === ind).map((question) => (
             <div key={ question.question }>
-              <div>
-                <div>
-                  <div data-testid="question-category">
-                    <h2>{ question.category }</h2>
-                  </div>
-                  <div data-testid="question-text">
-                    <h3>{ question.question }</h3>
-                  </div>
-                </div>
-              </div>
+              <h2 data-testid="question-category">{ question.category }</h2>
+              <h3 data-testid="question-text">{ question.question }</h3>
               <div
                 data-testid="answer-options"
               >
@@ -62,20 +71,18 @@ class Question extends React.Component {
                   this.allAnswers(question.incorrect_answers, question.correct_answer)
                     .map((incAnswer, index) => (
                       <button
-                        key={ incAnswer }
-                        className=""
+                        key={ incAnswer.answer }
+                        className={ answered ? incAnswer.type : null }
                         type="button"
-                        onClick={ (event) => (this.getButtonColor(event, incAnswer,
-                          question.correct_answer, index)) }
-                        data-testid={
-                          this.verifiAnswer(incAnswer, question.correct_answer, index)
-                        }
+                        data-testid={ this.verifiAnswer(incAnswer.type, index) }
+                        onClick={ () => this.getButtonColor() }
                       >
-                        { incAnswer }
+                        { incAnswer.answer }
                       </button>
                     ))
                 }
               </div>
+              <button type="button" onClick={ this.nextQuestion }>Próximo</button>
             </div>
           ))
         }
@@ -83,19 +90,15 @@ class Question extends React.Component {
     );
   }
 }
-
 Question.propTypes = {
   token: PropTypes.string,
   questions: PropTypes.arrayOf(PropTypes.object),
 }.isRequired;
-
 const mapStateToProps = (state) => ({
   token: state.token,
   questions: state.questions,
 });
-
 const mapDispatchToProps = (dispatch) => ({
   fetchQuestions: () => dispatch(actionFetchQuestion()),
 });
-
 export default connect(mapStateToProps, mapDispatchToProps)(Question);

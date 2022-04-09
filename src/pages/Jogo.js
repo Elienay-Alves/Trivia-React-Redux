@@ -6,11 +6,6 @@ import Question from '../components/Question';
 import Header from '../components/Header';
 
 class Jogo extends React.Component {
-  // componentDidMount() {
-  //   const { TOKEN } = this.props;
-  //   fetchQuestions(TOKEN);
-  // }
-
   render() {
     const { history } = this.props;
     return (
