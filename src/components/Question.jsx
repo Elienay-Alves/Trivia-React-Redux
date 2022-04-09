@@ -13,6 +13,7 @@ class Question extends React.Component {
     this.state = {
       ind: 0,
       answered: false,
+      indice: 0,
     };
   }
 
@@ -26,6 +27,10 @@ class Question extends React.Component {
   }
 
   nextQuestion = () => {
+    const seconds = 500;
+    setTimeout(() => this.setState((prevState) => ({
+      indice: prevState.ind + 1,
+    })), seconds);
     this.setState((prevState) => ({ ind: prevState.ind + 1 }));
     this.setState(() => ({ answered: false }));
   };
@@ -56,11 +61,11 @@ class Question extends React.Component {
 
   render() {
     const { questions } = this.props;
-    const { ind, answered } = this.state;
+    const { indice, answered } = this.state;
     return (
       <>
         {
-          questions.filter((obj, index) => index === ind).map((question) => (
+          questions.filter((obj, index) => index === indice).map((question) => (
             <div key={ question.question }>
               <h2 data-testid="question-category">{ question.category }</h2>
               <h3 data-testid="question-text">{ question.question }</h3>

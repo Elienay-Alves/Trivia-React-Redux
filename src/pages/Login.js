@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-// import { Link } from 'react-router-dom';
 import { login, getToken } from '../redux/action/index';
 import fetchTriviaApi from '../services/fetchTriviaApi';
 

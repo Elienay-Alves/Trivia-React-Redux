@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-// import fetchQuestions from '../services/fetchQuestionsApi';
 import Question from '../components/Question';
 import Header from '../components/Header';
 
