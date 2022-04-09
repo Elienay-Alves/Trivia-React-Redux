@@ -10,7 +10,7 @@ class Question extends React.Component {
     fetchQuestions();
   }
 
-  getButtonColor = ({ target }, incAnswer, quest, index) => {
+  getButtonColor = (arrayIncorrets, incAnswer, quest, index) => {
     const verifyAnswer = this.verifiAnswer(incAnswer, quest, index);
     if (verifyAnswer === 'correct-answer') {
       target.className = verifyAnswer;
@@ -19,11 +19,16 @@ class Question extends React.Component {
     }
   }
 
+  auxButtonCoor = (arrayIncorrets, quest) => {
+    const answers = this.allAnswers(arrayIncorrets, quest);
+    console.log(answers);
+  }
+
   allAnswers = (incAnswers, corAnswer) => {
     const numberRandom = 0.5;
     const quests = [...incAnswers, corAnswer];
     const shuffle = quests.sort(() => Math.random() - numberRandom);
-    return (shuffle);
+    return shuffle;
   }
 
   verifiAnswer = (answer, corAnswer, index) => {
@@ -60,8 +65,8 @@ class Question extends React.Component {
                         key={ incAnswer }
                         className=""
                         type="button"
-                        onClick={ (event) => (this.getButtonColor(event, incAnswer,
-                          question.correct_answer, index)) }
+                        onClick={ () => (this.getButtonColor(question.incorrect_answers,
+                          incAnswer, question.correct_answer, index)) }
                         data-testid={
                           this.verifiAnswer(incAnswer, question.correct_answer, index)
                         }
