@@ -16,17 +16,18 @@ class Question extends React.Component {
       answered: false,
       indice: 0,
       isBtnDisabled: false,
+      nextBtn: false,
     };
   }
 
   componentDidMount() {
     const { fetchQuestions } = this.props;
     fetchQuestions();
-    this.validation();
+    this.validationSecond();
   }
 
   getButtonColor = () => {
-    this.setState(() => ({ answered: true }));
+    this.setState(() => ({ answered: true }), this.validationNext);
   }
 
   nextQuestion = () => {
@@ -62,16 +63,22 @@ class Question extends React.Component {
     return `wrong-answer-${index}`;
   }
 
-  validation = () => {
+  validationSecond = () => {
     const trintaMil = 30000;
     setTimeout(() => this.setState({
       isBtnDisabled: true,
     }), trintaMil);
   }
 
+  validationNext = () => {
+    this.setState({
+      nextBtn: true,
+    });
+  }
+
   render() {
     const { questions } = this.props;
-    const { indice, answered, isBtnDisabled } = this.state;
+    const { indice, answered, isBtnDisabled, nextBtn } = this.state;
     return (
       <>
         {
@@ -99,7 +106,20 @@ class Question extends React.Component {
                 }
                 <Cronometer />
               </div>
-              <button type="button" onClick={ this.nextQuestion }>Próximo</button>
+              {
+                nextBtn
+                  ? (
+                    <button
+                      type="button"
+                      onClick={ this.nextQuestion }
+                      data-testid="btn-next"
+                    >
+                      Próximo
+
+                    </button>
+                  )
+                  : ''
+              }
             </div>
           ))
         }
