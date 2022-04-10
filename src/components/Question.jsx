@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { actionFetchQuestion } from '../redux/action';
 import './buttonColor.css';
+import Cronometer from './Cronometer';
 
 const CORRECT_ANSWER = 'correct-answer';
 
@@ -14,12 +15,14 @@ class Question extends React.Component {
       ind: 0,
       answered: false,
       indice: 0,
+      isBtnDisabled: false,
     };
   }
 
   componentDidMount() {
     const { fetchQuestions } = this.props;
     fetchQuestions();
+    this.validation();
   }
 
   getButtonColor = () => {
@@ -59,9 +62,16 @@ class Question extends React.Component {
     return `wrong-answer-${index}`;
   }
 
+  validation = () => {
+    const trintaMil = 30000;
+    setTimeout(() => this.setState({
+      isBtnDisabled: true,
+    }), trintaMil);
+  }
+
   render() {
     const { questions } = this.props;
-    const { indice, answered } = this.state;
+    const { indice, answered, isBtnDisabled } = this.state;
     return (
       <>
         {
@@ -81,11 +91,13 @@ class Question extends React.Component {
                         type="button"
                         data-testid={ this.verifiAnswer(incAnswer.type, index) }
                         onClick={ () => this.getButtonColor() }
+                        disabled={ isBtnDisabled }
                       >
                         { incAnswer.answer }
                       </button>
                     ))
                 }
+                <Cronometer />
               </div>
               <button type="button" onClick={ this.nextQuestion }>Próximo</button>
             </div>
