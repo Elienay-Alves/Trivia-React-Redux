@@ -1,5 +1,7 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import Question from '../components/Question';
 import Header from '../components/Header';
 
 class Jogo extends React.Component {
@@ -9,6 +11,7 @@ class Jogo extends React.Component {
       <div>
         <h1>Jogo</h1>
         <Header />
+        <Question />
         <button
           type="button"
           onClick={ () => history.push('/feedback') }
@@ -20,8 +23,13 @@ class Jogo extends React.Component {
   }
 }
 
-export default Jogo;
+const mapStateToProps = (state) => ({
+  TOKEN: state.token,
+});
 
-Jogo.propTypes = {
-  history: PropTypes.shape({ push: PropTypes.func }).isRequired,
-};
+Jogo.propTypes = ({
+  TOKEN: PropTypes.string,
+  history: PropTypes.shape({ push: PropTypes.func }),
+}).isRequired;
+
+export default connect(mapStateToProps)(Jogo);

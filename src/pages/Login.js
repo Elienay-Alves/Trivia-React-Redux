@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { login, getToken } from '../redux/action/index';
 import fetchTriviaApi from '../services/fetchTriviaApi';
 
@@ -93,16 +92,14 @@ class Login extends React.Component {
           </label>
           <br />
         </form>
-        <Link to="/jogo">
-          <button
-            type="submit"
-            data-testid="btn-play"
-            onClick={ () => this.handleClick(name, gravatarEmail) }
-            disabled={ btnDisable }
-          >
-            Entrar
-          </button>
-        </Link>
+        <button
+          type="submit"
+          data-testid="btn-play"
+          onClick={ () => this.handleClick(name, gravatarEmail) }
+          disabled={ btnDisable }
+        >
+          Entrar
+        </button>
       </main>
     );
   }

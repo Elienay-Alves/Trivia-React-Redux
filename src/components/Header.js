@@ -21,7 +21,6 @@ class Header extends React.Component {
   render() {
     const { email, name, score } = this.props;
     const { image } = this.state;
-    console.log(image);
     return (
       <div>
         <img src={ image } alt={ email } data-testid="header-profile-picture" />
