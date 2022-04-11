@@ -3,53 +3,93 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { actionFetchQuestion } from '../redux/action';
 import './buttonColor.css';
+import Cronometer from './Cronometer';
+
+const CORRECT_ANSWER = 'correct-answer';
 
 class Question extends React.Component {
   constructor() {
     super();
 
     this.state = {
+      ind: 0,
+      answered: false,
       indice: 0,
+      isBtnDisabled: false,
+      nextBtn: false,
     };
   }
 
   componentDidMount() {
     const { fetchQuestions } = this.props;
     fetchQuestions();
+    this.validationSecond();
   }
 
-  getButtonColor = ({ target }, incAnswer, quest, index) => {
-    const seconds = 500;
-    const verifyAnswer = this.verifiAnswer(incAnswer, quest, index);
+  // componentDidUpdate() {
+  //   const { questions, history } = this.props;
+  //   if (questions === []) { history.push('/feedback'); }
+  // }
 
-    if (verifyAnswer === 'correct-answer') {
-      target.className = verifyAnswer;
-    } else {
-      target.className = 'wrong-answer';
-    }
+  getButtonColor = () => {
+    this.setState(() => ({ answered: true }), this.validationNext);
+  }
 
-    setTimeout(() => this.setState((prevState) => ({
+  nextQuestion = () => {
+    this.setState((prevState) => ({
       indice: prevState.ind + 1,
-    })), seconds);
+      ind: prevState.ind + 1,
+    }));
+
+    this.setState(() => ({
+      answered: false,
+      isBtnDisabled: false,
+      nextBtn: false,
+    }));
+
+    clearTimeout(this.timer);
+    this.validationSecond();
   }
 
   allAnswers = (incAnswers, corAnswer) => {
     const numberRandom = 0.5;
-    const quests = [...incAnswers, corAnswer];
+    const quests = incAnswers.map((answer) => {
+      const objAnswer = {
+        answer,
+        type: 'wrong-answer',
+      };
+      return objAnswer;
+    });
+    quests.push({
+      answer: corAnswer,
+      type: CORRECT_ANSWER,
+    });
     const shuffle = quests.sort(() => Math.random() - numberRandom);
     return (shuffle);
   }
 
-  verifiAnswer = (answer, corAnswer, index) => {
-    if (answer === corAnswer) {
+  verifiAnswer = (answer, index) => {
+    if (answer === CORRECT_ANSWER) {
       return 'correct-answer';
     }
     return `wrong-answer-${index}`;
   }
 
+  validationSecond = () => {
+    const trintaMil = 30000;
+    this.timer = setTimeout(() => this.setState({
+      isBtnDisabled: true,
+      nextBtn: true,
+    }), trintaMil);
+  }
+
+  validationNext = () => {
+    this.setState({ nextBtn: true });
+  }
+
   render() {
     const { questions } = this.props;
-    const { indice } = this.state;
+    const { indice, answered, isBtnDisabled, nextBtn } = this.state;
     return (
       <>
         {
@@ -61,19 +101,30 @@ class Question extends React.Component {
                 { this.allAnswers(question.incorrect_answers, question.correct_answer)
                   .map((incAnswer, index) => (
                     <button
-                      key={ incAnswer }
-                      className=""
+                      key={ incAnswer.answer }
+                      className={ answered ? incAnswer.type : null }
                       type="button"
-                      onClick={ (event) => (this.getButtonColor(event, incAnswer,
-                        question.correct_answer, index)) }
-                      data-testid={
-                        this.verifiAnswer(incAnswer, question.correct_answer, index)
-                      }
+                      disabled={ isBtnDisabled }
+                      onClick={ () => this.getButtonColor() }
+                      data-testid={ this.verifiAnswer(incAnswer.type, index) }
                     >
-                      { incAnswer }
+                      { incAnswer.answer }
                     </button>
                   ))}
+                <div>
+                  { nextBtn
+                    ? (
+                      <button
+                        type="button"
+                        data-testid="btn-next"
+                        onClick={ this.nextQuestion }
+                      >
+                        Próximo
+                      </button>)
+                    : ''}
+                </div>
               </div>
+              <Cronometer />
             </div>
           ))
         }
