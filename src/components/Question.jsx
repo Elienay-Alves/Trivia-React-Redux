@@ -36,19 +36,27 @@ class Question extends React.Component {
   }
 
   nextQuestion = () => {
-    this.setState((prevState) => ({
-      indice: prevState.ind + 1,
-      ind: prevState.ind + 1,
-    }));
+    const { indice } = this.state;
+    const { history } = this.props;
+    const magicNumber = 4;
+    console.log(indice);
+    if (indice === magicNumber) {
+      history.push('/feedback');
+    } else {
+      this.setState((prevState) => ({
+        indice: prevState.ind + 1,
+        ind: prevState.ind + 1,
+      }));
 
-    this.setState(() => ({
-      answered: false,
-      isBtnDisabled: false,
-      nextBtn: false,
-    }));
+      this.setState(() => ({
+        answered: false,
+        isBtnDisabled: false,
+        nextBtn: false,
+      }));
 
-    clearTimeout(this.timer);
-    this.validationSecond();
+      clearTimeout(this.timer);
+      this.validationSecond();
+    }
   }
 
   allAnswers = (incAnswers, corAnswer) => {
