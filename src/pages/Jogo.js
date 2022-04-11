@@ -6,11 +6,12 @@ import Header from '../components/Header';
 
 class Jogo extends React.Component {
   render() {
+    const { history } = this.props;
     return (
       <div>
         <h1>Jogo</h1>
         <Header />
-        <Question />
+        <Question history={ history } />
       </div>
     );
   }
