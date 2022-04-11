@@ -31,15 +31,38 @@ class Question extends React.Component {
   //   if (questions === []) { history.push('/feedback'); }
   // }
 
-  getButtonColor = () => {
-    this.setState(() => ({ answered: true }), this.validationNext);
+  // getButtonColor = (event, timer, difficult) => {
+  //   this.setState(() => ({ answered: true }), this.validationNext, () => (this
+  //     .points(event, timer, difficult)));
+  // }
+
+  getButtonColor = (answer, timer, difficult) => {
+    this.setState(() => ({ answered: true }), () => {
+      this.validationNext();
+      if (answer === CORRECT_ANSWER) {
+        return this.points(timer, difficult);
+      }
+    });
+  }
+
+  points = (timer, difficult) => {
+    const hard = 3;
+    const medium = 2;
+    const easy = 1;
+    const ten = 10;
+    if (difficult === 'hard') {
+      return ten + (timer * hard);
+    } if (difficult === 'medium') {
+      return ten + (timer * medium);
+    } if (difficult === 'easy') {
+      return ten + (timer * easy);
+    }
   }
 
   nextQuestion = () => {
     const { indice } = this.state;
     const { history } = this.props;
     const magicNumber = 4;
-    console.log(indice);
     if (indice === magicNumber) {
       history.push('/feedback');
     } else {
@@ -98,6 +121,7 @@ class Question extends React.Component {
   render() {
     const { questions } = this.props;
     const { indice, answered, isBtnDisabled, nextBtn } = this.state;
+    const timer = 5;
     return (
       <>
         {
@@ -113,7 +137,8 @@ class Question extends React.Component {
                       className={ answered ? incAnswer.type : null }
                       type="button"
                       disabled={ isBtnDisabled }
-                      onClick={ () => this.getButtonColor() }
+                      onClick={ () => this
+                        .getButtonColor(incAnswer.type, timer, question.difficulty) }
                       data-testid={ this.verifiAnswer(incAnswer.type, index) }
                     >
                       { incAnswer.answer }
