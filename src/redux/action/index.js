@@ -1,6 +1,7 @@
 export const SUBMIT = 'SUBMIT';
 export const TOKEN = 'TOKEN';
 export const FETCH_QUESTIONS = 'FETCH_QUESTIONS';
+export const UPDATE_SCORE = 'UPDATE_SCORE';
 
 export const login = (value) => ({ type: SUBMIT, value });
 
@@ -13,3 +14,5 @@ export const actionFetchQuestion = () => async (dispatch, getState) => {
   const data = await response.json();
   dispatch(setQuestions(data.results));
 };
+
+export const actionUpdateScore = (value) => ({ type: UPDATE_SCORE, value });
