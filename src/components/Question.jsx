@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { actionFetchQuestion } from '../redux/action';
+import { actionFetchQuestion, actionUpdateScore } from '../redux/action';
 import './buttonColor.css';
-import Cronometer from './Cronometer';
 
 const CORRECT_ANSWER = 'correct-answer';
 
@@ -17,45 +16,70 @@ class Question extends React.Component {
       indice: 0,
       isBtnDisabled: false,
       nextBtn: false,
+      seconds: 30,
+      shuffle: [],
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { fetchQuestions } = this.props;
-    fetchQuestions();
-    this.validationSecond();
+    const second = 1000;
+
+    await fetchQuestions();
+    this.allAnswers();
+
+    this.intervalID = setInterval(() => {
+      this.setState((prevState) => ({
+        seconds: prevState.seconds - 1,
+      }), () => {
+        const { seconds } = this.state;
+        if (seconds === 0) clearInterval(this.intervalID);
+      });
+    }, second);
   }
 
-  // componentDidUpdate() {
-  //   const { questions, history } = this.props;
-  //   if (questions === []) { history.push('/feedback'); }
-  // }
+  componentDidUpdate(_prevProp, prevState) {
+    const { isAnswered, answered, seconds, indice, isBtnDisabled } = this.state;
 
-  // getButtonColor = (event, timer, difficult) => {
-  //   this.setState(() => ({ answered: true }), this.validationNext, () => (this
-  //     .points(event, timer, difficult)));
-  // }
+    if (answered && !isAnswered) {
+      this.setState({ isAnswered: true });
+      clearInterval(this.intervalID);
+    }
 
-  getButtonColor = (answer, timer, difficult) => {
-    this.setState(() => ({ answered: true }), () => {
-      this.validationNext();
+    if (seconds === 0 && !isBtnDisabled) {
+      this.setState({ isBtnDisabled: true, nextBtn: true });
+    }
+
+    if (prevState.indice !== indice) this.allAnswers();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.intervalID);
+  }
+
+  getButtonColor = (answer, difficult) => {
+    const { dispatchScore } = this.props;
+    this.setState(({ answered: true,
+      isBtnDisabled: true,
+      nextBtn: true }), () => {
       if (answer === CORRECT_ANSWER) {
-        return this.points(timer, difficult);
+        dispatchScore(this.points(difficult));
       }
     });
   }
 
-  points = (timer, difficult) => {
+  points = (difficult) => {
+    const { seconds } = this.state;
     const hard = 3;
     const medium = 2;
     const easy = 1;
     const ten = 10;
     if (difficult === 'hard') {
-      return ten + (timer * hard);
+      return ten + (seconds * hard);
     } if (difficult === 'medium') {
-      return ten + (timer * medium);
+      return ten + (seconds * medium);
     } if (difficult === 'easy') {
-      return ten + (timer * easy);
+      return ten + (seconds * easy);
     }
   }
 
@@ -76,13 +100,14 @@ class Question extends React.Component {
         isBtnDisabled: false,
         nextBtn: false,
       }));
-
-      clearTimeout(this.timer);
-      this.validationSecond();
     }
   }
 
-  allAnswers = (incAnswers, corAnswer) => {
+  allAnswers = () => {
+    const { questions } = this.props;
+    const { indice } = this.state;
+    const { incorrect_answers: incAnswers,
+      correct_answer: corAnswer } = questions[indice];
     const numberRandom = 0.5;
     const quests = incAnswers.map((answer) => {
       const objAnswer = {
@@ -96,7 +121,7 @@ class Question extends React.Component {
       type: CORRECT_ANSWER,
     });
     const shuffle = quests.sort(() => Math.random() - numberRandom);
-    return (shuffle);
+    this.setState({ shuffle });
   }
 
   verifiAnswer = (answer, index) => {
@@ -106,22 +131,9 @@ class Question extends React.Component {
     return `wrong-answer-${index}`;
   }
 
-  validationSecond = () => {
-    const trintaMil = 30000;
-    this.timer = setTimeout(() => this.setState({
-      isBtnDisabled: true,
-      nextBtn: true,
-    }), trintaMil);
-  }
-
-  validationNext = () => {
-    this.setState({ nextBtn: true });
-  }
-
   render() {
     const { questions } = this.props;
-    const { indice, answered, isBtnDisabled, nextBtn } = this.state;
-    const timer = 5;
+    const { indice, answered, isBtnDisabled, nextBtn, seconds, shuffle } = this.state;
     return (
       <>
         {
@@ -130,20 +142,19 @@ class Question extends React.Component {
               <h2 data-testid="question-category">{ question.category }</h2>
               <h3 data-testid="question-text">{ question.question }</h3>
               <div data-testid="answer-options">
-                { this.allAnswers(question.incorrect_answers, question.correct_answer)
-                  .map((incAnswer, index) => (
-                    <button
-                      key={ incAnswer.answer }
-                      className={ answered ? incAnswer.type : null }
-                      type="button"
-                      disabled={ isBtnDisabled }
-                      onClick={ () => this
-                        .getButtonColor(incAnswer.type, timer, question.difficulty) }
-                      data-testid={ this.verifiAnswer(incAnswer.type, index) }
-                    >
-                      { incAnswer.answer }
-                    </button>
-                  ))}
+                { shuffle.map((incAnswer, index) => (
+                  <button
+                    key={ incAnswer.answer }
+                    className={ answered ? incAnswer.type : null }
+                    type="button"
+                    disabled={ isBtnDisabled }
+                    onClick={ () => this
+                      .getButtonColor(incAnswer.type, question.difficulty) }
+                    data-testid={ this.verifiAnswer(incAnswer.type, index) }
+                  >
+                    { incAnswer.answer }
+                  </button>
+                ))}
                 <div>
                   { nextBtn
                     ? (
@@ -157,7 +168,7 @@ class Question extends React.Component {
                     : ''}
                 </div>
               </div>
-              <Cronometer />
+              <h2>{`You have: ${seconds} seconds`}</h2>
             </div>
           ))
         }
@@ -178,6 +189,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   fetchQuestions: () => dispatch(actionFetchQuestion()),
+  dispatchScore: (value) => dispatch(actionUpdateScore(value)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Question);
